@@ -1,6 +1,4 @@
 import { db } from "@/lib/db";
-import { i } from "framer-motion/client";
-import { Postpone } from "next/dist/server/app-render/dynamic-rendering";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -64,28 +62,28 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function DELETE(req:NextRequest) {
-    try {
-        const {searchParams} = new URL(req.url);
-        const id = searchParams.get("id");
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
 
-        if(!id) {
-            return NextResponse.json(
-                {error:"Wrokspace id is required"},
-                {status:400}
-            );
-        }
-
-        await db.workspace.delete({
-            where:{id},
-        });
-
-        return NextResponse.json({success:true});
-    } catch (error) {
-        console.error("Error deleting workspace",error);
-        return NextResponse.json(
-            {error:"Failed to delete workspace"},
-            {status:500}
-        );
+    if (!id) {
+      return NextResponse.json(
+        { error: "Wrokspace id is required" },
+        { status: 400 },
+      );
     }
+
+    await db.workspace.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting workspace", error);
+    return NextResponse.json(
+      { error: "Failed to delete workspace" },
+      { status: 500 },
+    );
+  }
 }
