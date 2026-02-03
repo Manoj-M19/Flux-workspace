@@ -1,4 +1,5 @@
 "use client";
+import { Navbar } from "@/components/layout/navbar";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -103,6 +104,7 @@ export default function WorkspacePage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Navbar/>
       <div className="max-w-6xl mx-auto p-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-4xl font-light tracking-tight">Workspace</h1>
