@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Canvas } from "@/components/workspace/canvas";
 import { Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSession } from "next-auth/react";
 
 interface Item {
   id: string;
@@ -33,7 +34,7 @@ export default function WorkspacePage() {
     content: "",
   });
 
-  const DEMO_USER_ID = "demo-user";
+  const {data:session} = useSession();
 
   useEffect(() => {
     fetchItems();
@@ -84,7 +85,7 @@ export default function WorkspacePage() {
         body: JSON.stringify({
           ...newItem,
           workspaceId,
-          userId: DEMO_USER_ID,
+          userId: session?.user.id,
           position_x: randomX,
           position_y: randomY,
         }),
