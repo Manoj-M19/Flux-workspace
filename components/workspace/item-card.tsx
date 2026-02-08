@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { Trash2, GripVertical } from "lucide-react";
 
 interface ItemCardProps {
   item: {
@@ -20,12 +21,24 @@ interface ItemCardProps {
 export function ItemCard({ item, onUpdate, onDelete }: ItemCardProps) {
   const [isDragging, setIsDragging] = useState(false);
 
+  const typeColors = {
+    note: "from-blue-500 to-cyan-500",
+    task: "from-green-500 to-emerald-500",
+    link: "from-purple-500 to-pink-500",
+  };
+
+  const typeEmojis = {
+    note: "📝",
+    task: "✅",
+    link: "🔗",
+  };
+
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
+      exit={{ opacity: 0, scale: 0.8 }}
       drag
       dragMomentum={false}
       dragElastic={0}
@@ -48,35 +61,37 @@ export function ItemCard({ item, onUpdate, onDelete }: ItemCardProps) {
         cursor: isDragging ? "grabbing" : "grab",
       }}
       className={`
-        select-none
+        select-none group
         ${isDragging ? "z-50" : "z-10"}
       `}
     >
-      <div className="p-6 rounded-2xl border-2 border-border/50 bg-background shadow-lg hover:border-border transition-colors">
+      <div className="relative p-6 rounded-3xl border-2 border-purple-100/50 bg-white/90 backdrop-blur-sm shadow-xl shadow-black/5 hover:shadow-2xl hover:shadow-purple-500/20 hover:border-purple-300 transition-all">
+        <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity">
+          <GripVertical className="w-5 h-5 text-gray-400" />
+        </div>
+
         <div className="flex items-start justify-between mb-4">
-          <span
-            className={`
-            px-3 py-1 rounded-full text-xs font-mono uppercase tracking-wider
-            ${
-              item.type === "note"
-                ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                : item.type === "task"
-                  ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                  : "bg-purple-500/10 text-purple-600 dark:text-purple-400"
-            }
-          `}
-          >
-            {item.type}
-          </span>
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-10 h-10 rounded-xl bg-linear-to-br ${typeColors[item.type as keyof typeof typeColors]} flex items-center justify-center text-xl shadow-lg`}
+            >
+              {typeEmojis[item.type as keyof typeof typeEmojis]}
+            </div>
+            <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              {item.type}
+            </span>
+          </div>
+
           <motion.button
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.1, rotate: 90 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => onDelete(item.id)}
-            className="w-6 h-6 rounded-full hover:bg-red-500/10 text-muted-foreground hover:text-red-500 flex items-center justify-center transition-colors"
+            className="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-full hover:bg-red-100 text-gray-400 hover:text-red-500 flex items-center justify-center transition-all"
           >
-            ×
+            <Trash2 className="w-4 h-4" />
           </motion.button>
         </div>
+
         <div className="flex items-start gap-3">
           {item.type === "task" && (
             <motion.button
@@ -84,11 +99,11 @@ export function ItemCard({ item, onUpdate, onDelete }: ItemCardProps) {
               whileTap={{ scale: 0.9 }}
               onClick={() => onUpdate(item.id, { completed: !item.completed })}
               className={`
-                w-5 h-5 rounded-md border-2 shrink-0 mt-0.5 transition-colors
+                w-6 h-6 rounded-lg border-2 shrink-0 mt-0.5 transition-all flex items-center justify-center
                 ${
                   item.completed
-                    ? "bg-green-500 border-green-500"
-                    : "border-border hover:border-primary"
+                    ? "bg-linear-to-br from-green-500 to-emerald-500 border-green-500"
+                    : "border-purple-300 hover:border-purple-500"
                 }
               `}
             >
@@ -96,8 +111,8 @@ export function ItemCard({ item, onUpdate, onDelete }: ItemCardProps) {
                 <motion.svg
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.2 }}
-                  className="w-full h-full text-white"
+                  transition={{ duration: 0.3 }}
+                  className="w-4 h-4 text-white"
                   viewBox="0 0 20 20"
                   fill="none"
                   stroke="currentColor"
@@ -108,28 +123,29 @@ export function ItemCard({ item, onUpdate, onDelete }: ItemCardProps) {
               )}
             </motion.button>
           )}
+
           <div className="flex-1">
             <h3
-              className={`text-lg font-medium mb-2 ${
-                item.completed ? "line-through text-muted-foreground" : ""
+              className={`text-lg font-semibold mb-2 ${
+                item.completed ? "line-through text-gray-400" : "text-gray-900"
               }`}
             >
               {item.title}
             </h3>
             {item.content && (
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-sm text-gray-600 leading-relaxed">
                 {item.content}
               </p>
             )}
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
+        <div className="mt-4 pt-4 border-t border-purple-100 flex items-center justify-between text-xs text-gray-500">
           <span>Drag to move</span>
-          <div className="flex gap-0.5">
-            <div className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <div className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <div className="w-1 h-1 rounded-full bg-muted-foreground/30" />
+          <div className="flex gap-1">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="w-1 h-1 rounded-full bg-purple-300" />
+            ))}
           </div>
         </div>
       </div>
