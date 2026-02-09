@@ -9,79 +9,85 @@ import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { CommandPalette } from "@/components/ui/command-palette";
+import { UserMenu } from "@/components/ui/user-menu";
 
 interface Item {
-  id:string;
-  type:string;
-  title:string;
-  content?:string;
-  completed:boolean;
-  position_x:number;
-  position_y:number;
-  createdAt:string;
-  updatedAt:string;
+  id: string;
+  type: string;
+  title: string;
+  content?: string;
+  completed: boolean;
+  position_x: number;
+  position_y: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export default function WorkspacePage() {
   const params = useParams();
   const router = useRouter();
-  const {data:session,status} = useSession();
+  const { data: session, status } = useSession();
   const workspaceId = params.id as string;
 
-  const [items,setItems] = useState<Item[]>([]);
-  const [loading,setLoading] = useState(true);
-  const [showForm,setShowForm] = useState(false);
-  const [workspaceName,setWorkspaceName] = useState("Workspace");
+  const [items, setItems] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [workspaceName, setWorkspaceName] = useState("Workspace");
   const [showCommandPalette, setShowCommandPalette] = useState(false);
 
-  const [newItem,setNewItem] = useState({
-    type:"note",
-    title:"",
-    content:"",
+  const [newItem, setNewItem] = useState({
+    type: "note",
+    title: "",
+    content: "",
   });
 
-  useEffect(()=> {
-    if(status === "unauthenticated"){
-      router.push("/")
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/");
     }
-  },[status,router]);
+  }, [status, router]);
 
-  useEffect(()=> {
-    if(session?.user?.id) {
+  useEffect(() => {
+    if (session?.user?.id) {
       fetchItems();
       fetchWorkspaceName();
     }
-  },[workspaceId,session]);
+  }, [workspaceId, session]);
 
-  useEffect(()=> {
-    function handlekeyPress(e:KeyboardEvent) {
-      if(e.key ==="n" && !showForm && document.activeElement?.tagName !=="INPUT" && document.activeElement?.tagName !=="TEXTAREA") {
+  useEffect(() => {
+    function handlekeyPress(e: KeyboardEvent) {
+      if (
+        e.key === "n" &&
+        !showForm &&
+        document.activeElement?.tagName !== "INPUT" &&
+        document.activeElement?.tagName !== "TEXTAREA"
+      ) {
         e.preventDefault();
         setShowForm(true);
       }
 
-      if(e.key === "Escape" && showForm) {
+      if (e.key === "Escape" && showForm) {
         setShowForm(false);
       }
     }
 
-    window.addEventListener("keydown",handlekeyPress);
-    return () => window.removeEventListener("keydown",handlekeyPress);
-  },[showForm]);
+    window.addEventListener("keydown", handlekeyPress);
+    return () => window.removeEventListener("keydown", handlekeyPress);
+  }, [showForm]);
 
-  useEffect(()=> {
-    function handlekeyPress(e:KeyboardEvent) {
-      if((e.metaKey || e.ctrlKey) && e.key === "k") {
+  useEffect(() => {
+    function handlekeyPress(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setShowCommandPalette(true)
+        setShowCommandPalette(true);
       }
     }
-    window.addEventListener("keydown",handlekeyPress);
-    return () => window.removeEventListener("keydown",handlekeyPress)
-  })
+    window.addEventListener("keydown", handlekeyPress);
+    return () => window.removeEventListener("keydown", handlekeyPress);
+  });
 
-  function handleCreateFromPalette(type:string) {
-    setNewItem({ ...newItem,type});
+  function handleCreateFromPalette(type: string) {
+    setNewItem({ ...newItem, type });
     setShowForm(true);
   }
 
@@ -89,12 +95,12 @@ export default function WorkspacePage() {
     try {
       const res = await fetch(`/api/workspaces?userId=${session?.user?.id}`);
       const data = await res.json();
-      const workspace = data.workspaces?.find((w:any) => w.id === workspaceId);
+      const workspace = data.workspaces?.find((w: any) => w.id === workspaceId);
       if (workspace) {
-         setWorkspaceName(workspace.name);
+        setWorkspaceName(workspace.name);
       }
     } catch (error) {
-      console.error("Error fetching workspace name:",error);
+      console.error("Error fetching workspace name:", error);
     }
   }
 
@@ -105,72 +111,72 @@ export default function WorkspacePage() {
       const data = await res.json();
       setItems(data.items || []);
     } catch (error) {
-      console.error("Error fetching items:",error)
+      console.error("Error fetching items:", error);
     } finally {
       setLoading(false);
     }
   }
 
-  async function createItem(e:React.FormEvent) {
+  async function createItem(e: React.FormEvent) {
     e.preventDefault();
-    if(!newItem.title.trim() || !session?.user?.id) return;
+    if (!newItem.title.trim() || !session?.user?.id) return;
 
     try {
-      const randomX = Math.random() * 500 +100;
+      const randomX = Math.random() * 500 + 100;
       const randomY = Math.random() * 500 + 100;
 
       const res = await fetch("/api/items", {
-        method:'POST',
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           ...newItem,
           workspaceId,
-          userId:session.user.id,
-          position_x:randomX,
-          position_y:randomY,
+          userId: session.user.id,
+          position_x: randomX,
+          position_y: randomY,
         }),
       });
 
-      if(res.ok) {
+      if (res.ok) {
         const data = await res.json();
-        setItems((prev)=> [data.item,...prev]);
-        setNewItem({type:"note",title:"",content:""});
+        setItems((prev) => [data.item, ...prev]);
+        setNewItem({ type: "note", title: "", content: "" });
         setShowForm(false);
       }
-    } catch(error) {
-      console.error("Error creating item:",error);
+    } catch (error) {
+      console.error("Error creating item:", error);
     }
-  } 
+  }
 
-  async function updateItem(id:string,updates:any) {
+  async function updateItem(id: string, updates: any) {
     try {
-      setItems((prev)=>
-        prev.map((item)=> (item.id === id? {...item,...updates}:item))
+      setItems((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, ...updates } : item)),
       );
 
-      const res = await fetch('/api/items',{
-        method:"PATCH",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
+      const res = await fetch("/api/items", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           id,
-          ...updates
+          ...updates,
         }),
       });
-      if(!res.ok) {
+      if (!res.ok) {
         fetchItems();
       }
-    } catch(error) {
+    } catch (error) {
       console.error("Error updating item:", error);
       fetchItems();
     }
   }
 
-  async function deleteItem(id:string){
+  async function deleteItem(id: string) {
     try {
-      setItems((prev)=> prev.filter((item) => item.id !== id))
-      await fetch(`/api/items?id=${id}`,{method:"DELETE"})
+      setItems((prev) => prev.filter((item) => item.id !== id));
+      await fetch(`/api/items?id=${id}`, { method: "DELETE" });
     } catch (error) {
-      console.error("Error deleting item:",error)
+      console.error("Error deleting item:", error);
       fetchItems();
     }
   }
@@ -196,11 +202,9 @@ export default function WorkspacePage() {
 
   return (
     <div className="h-screen flex flex-col bg-[#FAFAFF]">
-      {/* Top Navigation */}
       <nav className="relative z-50 border-b border-purple-100/50 bg-white/50 backdrop-blur-sm">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
-            {/* Left: Breadcrumb & Title */}
             <div className="flex items-center gap-4">
               <Link
                 href="/workspaces"
@@ -222,37 +226,29 @@ export default function WorkspacePage() {
               </div>
             </div>
 
-            {/* Center: Search */}
-            <div className="hidden md:block flex-1 max-w-md mx-12">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search in workspace..."
-                  className="w-full pl-10 pr-4 py-2 bg-white/80 border border-purple-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
-                />
-              </div>
-            </div>
-
-            {/* Right: Actions */}
             <div className="flex items-center gap-2">
               <button
+                onClick={() => setShowCommandPalette(true)}
                 className="hidden sm:flex items-center gap-2 px-4 py-2 hover:bg-purple-100 rounded-xl transition-colors text-gray-700"
               >
+                <Search className="w-4 h-4" />
+                <span className="text-sm font-medium">Search</span>
+                <kbd className="ml-2 px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded font-mono">
+                  ⌘K
+                </kbd>
+              </button>
+              <button className="hidden sm:flex items-center gap-2 px-4 py-2 hover:bg-purple-100 rounded-xl transition-colors text-gray-700">
                 <Users className="w-4 h-4" />
                 <span className="text-sm font-medium">Share</span>
               </button>
-              <button className="p-2 hover:bg-purple-100 rounded-xl transition-colors">
-                <Settings className="w-5 h-5 text-gray-600" />
-              </button>
+              <div className="h-6 w-px bg-purple-200" />
+              <UserMenu />
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Canvas Area */}
       <main className="flex-1 overflow-hidden relative">
-        {/* Linear background */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-200/10 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-200/10 rounded-full blur-3xl" />
@@ -280,10 +276,13 @@ export default function WorkspacePage() {
             </div>
           </motion.div>
         ) : (
-          <Canvas items={items} onUpdateItem={updateItem} onDeleteItem={deleteItem} />
+          <Canvas
+            items={items}
+            onUpdateItem={updateItem}
+            onDeleteItem={deleteItem}
+          />
         )}
 
-        {/* Floating Add Button */}
         <motion.button
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -300,7 +299,6 @@ export default function WorkspacePage() {
           />
         </motion.button>
 
-        {/* Keyboard Hints */}
         {!showForm && items.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -308,21 +306,23 @@ export default function WorkspacePage() {
             className="fixed bottom-8 left-8 flex items-center gap-4 text-xs text-gray-500 pointer-events-none"
           >
             <div className="flex items-center gap-2 px-3 py-2 bg-white/80 backdrop-blur-sm border border-purple-100 rounded-full">
-              <kbd className="px-2 py-1 bg-purple-100 text-purple-600 rounded font-mono">N</kbd>
+              <kbd className="px-2 py-1 bg-purple-100 text-purple-600 rounded font-mono">
+                N
+              </kbd>
               <span>New item</span>
             </div>
             <div className="flex items-center gap-2 px-3 py-2 bg-white/80 backdrop-blur-sm border border-purple-100 rounded-full">
-              <kbd className="px-2 py-1 bg-purple-100 text-purple-600 rounded font-mono">ESC</kbd>
+              <kbd className="px-2 py-1 bg-purple-100 text-purple-600 rounded font-mono">
+                ESC
+              </kbd>
               <span>Close</span>
             </div>
           </motion.div>
         )}
 
-        {/* Create Item Modal */}
         <AnimatePresence>
           {showForm && (
             <>
-              {/* Backdrop */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -331,7 +331,6 @@ export default function WorkspacePage() {
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
               />
 
-              {/* Modal */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -346,7 +345,6 @@ export default function WorkspacePage() {
                   <h2 className="text-3xl font-bold mb-6">Create New Item</h2>
 
                   <div className="space-y-6">
-                    {/* Type selector */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-3">
                         Type
@@ -381,7 +379,6 @@ export default function WorkspacePage() {
                       </div>
                     </div>
 
-                    {/* Title input */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Title <span className="text-red-500">*</span>
@@ -399,7 +396,6 @@ export default function WorkspacePage() {
                       />
                     </div>
 
-                    {/* Content textarea */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Content
@@ -415,7 +411,6 @@ export default function WorkspacePage() {
                       />
                     </div>
 
-                    {/* Action buttons */}
                     <div className="flex gap-3 pt-4">
                       <button
                         type="button"
@@ -433,7 +428,6 @@ export default function WorkspacePage() {
                     </div>
                   </div>
 
-                  {/* Keyboard hint */}
                   <p className="mt-4 text-xs text-gray-500 text-center">
                     Press{" "}
                     <kbd className="px-1.5 py-0.5 bg-purple-100 text-purple-600 rounded font-mono">
@@ -447,7 +441,7 @@ export default function WorkspacePage() {
           )}
         </AnimatePresence>
       </main>
-      {/* Command Palette */}
+
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
