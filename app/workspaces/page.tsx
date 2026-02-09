@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion";
+import { UserMenu } from "@/components/ui/user-menu";
 import { 
   Plus, 
   Trash2, 
@@ -148,21 +149,22 @@ const filteredWorkspaces = workspaces.filter(w=>
               </p>
             </div>
 
-            {/* Right: Actions */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowCreateModal(true)}
-              className="px-6 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              New Workspace
-            </motion.button>
-          </div>
+        
+<div className="flex items-center gap-3">
+  <UserMenu />
+  <motion.button
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    onClick={() => setShowCreateModal(true)}
+    className="px-6 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-2"
+  >
+    <Plus className="w-5 h-5" />
+    New Workspace
+  </motion.button>
+</div>
 
-          {/* Search & View Toggle */}
           <div className="flex items-center gap-4">
-            {/* Search */}
+
             <div className="flex-1 relative max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
@@ -174,7 +176,6 @@ const filteredWorkspaces = workspaces.filter(w=>
               />
             </div>
 
-            {/* View Toggle */}
             <div className="flex items-center gap-1 p-1 bg-white/80 backdrop-blur-sm border border-purple-100 rounded-full">
               <button
                 onClick={() => setViewMode("grid")}
@@ -201,7 +202,7 @@ const filteredWorkspaces = workspaces.filter(w=>
         </div>
       </div>
 
-      {/* Workspaces Grid/List */}
+
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
         {filteredWorkspaces.length === 0 ? (
           <motion.div
@@ -245,12 +246,12 @@ const filteredWorkspaces = workspaces.filter(w=>
                   className="group"
                 >
                   <div className="relative h-full">
-                    {/* Card */}
+    
                     <Link
                       href={`/workspace/${workspace.id}`}
                       className="block h-full p-6 bg-white/80 backdrop-blur-sm border-2 border-purple-100/50 rounded-3xl hover:border-purple-300 hover:shadow-xl hover:shadow-purple-500/10 transition-all group-hover:-translate-y-1"
                     >
-                      {/* Top */}
+                  
                       <div className="flex items-start justify-between mb-4">
                         <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                           <Sparkles className="w-7 h-7 text-white" />
@@ -260,7 +261,7 @@ const filteredWorkspaces = workspaces.filter(w=>
                           <button
                             onClick={(e) => {
                               e.preventDefault();
-                              // TODO: Add to favorites
+                   
                             }}
                             className="p-2 hover:bg-purple-100 rounded-full transition-colors"
                           >
@@ -278,12 +279,12 @@ const filteredWorkspaces = workspaces.filter(w=>
                         </div>
                       </div>
 
-                      {/* Title */}
+            
                       <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
                         {workspace.name}
                       </h3>
 
-                      {/* Meta */}
+     
                       <div className="flex items-center gap-4 text-sm text-gray-500">
                         <div className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
@@ -295,7 +296,7 @@ const filteredWorkspaces = workspaces.filter(w=>
                         </div>
                       </div>
 
-                      {/* Arrow */}
+         
                       <div className="mt-6 flex items-center text-purple-600 font-medium opacity-0 group-hover:opacity-100 transition-all">
                         Open workspace
                         <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -309,11 +310,11 @@ const filteredWorkspaces = workspaces.filter(w=>
         )}
       </div>
 
-      {/* Create Modal */}
+
       <AnimatePresence>
         {showCreateModal && (
           <>
-            {/* Backdrop */}
+         
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -322,7 +323,7 @@ const filteredWorkspaces = workspaces.filter(w=>
               className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
             />
 
-            {/* Modal */}
+         
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -381,6 +382,7 @@ const filteredWorkspaces = workspaces.filter(w=>
           </>
         )}
       </AnimatePresence>
+    </div>
     </div>
   );
 }
