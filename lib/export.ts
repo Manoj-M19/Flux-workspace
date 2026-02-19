@@ -19,7 +19,7 @@ export function exportAsMarkdown(title: string, content: string): void {
 export async function exportAsPDF(
   title: string,
   content: string,
-  icon?: string
+  icon?: string,
 ): Promise<void> {
   const container = document.createElement("div");
   container.style.position = "absolute";
@@ -48,7 +48,7 @@ export async function exportAsPDF(
       logging: false,
     });
 
-    const imgWidth = 210; 
+    const imgWidth = 210;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     const pdf = new jsPDF("p", "mm", "a4");
 
@@ -80,7 +80,7 @@ function htmlToMarkdown(html: string): string {
   // Links
   markdown = markdown.replace(
     /<a[^>]*href=["']([^"']*)["'][^>]*>(.*?)<\/a>/gi,
-    "[$2]($1)"
+    "[$2]($1)",
   );
 
   // Lists
@@ -97,7 +97,7 @@ function htmlToMarkdown(html: string): string {
   // Blockquote
   markdown = markdown.replace(
     /<blockquote[^>]*>(.*?)<\/blockquote>/gi,
-    "> $1\n"
+    "> $1\n",
   );
 
   // Paragraphs
