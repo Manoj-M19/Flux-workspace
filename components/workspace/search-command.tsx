@@ -2,7 +2,7 @@
 
 import {motion, AnimatePresence } from "framer-motion";
 import { Clock, FileText, Search, X } from "lucide-react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 interface Page{
@@ -12,6 +12,7 @@ interface Page{
     content:string;
     workspaceId:string;
     updatedAt:string;
+    isArchived: boolean;
 }
 
 interface SearchCommandProps {
