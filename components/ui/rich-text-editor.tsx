@@ -2,26 +2,36 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
-import Link from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
+import TextAlign from "@tiptap/extension-text-align";
 import Color from "@tiptap/extension-color";
 import { TextStyle } from "@tiptap/extension-text-style";
+import Highlight from "@tiptap/extension-highlight";
+import Link from "@tiptap/extension-link";
+import { useState } from "react";
 import {
+  Bold,
+  Italic,
   Underline as UnderlineIcon,
   Strikethrough,
   Code,
+  Heading1,
+  Heading2,
+  Heading3,
   List,
   ListOrdered,
   Quote,
+  Undo,
+  Redo,
   Link2,
   Minus,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
   Palette,
-  BoldIcon,
-  ItalicIcon,
+  Sparkles,
 } from "lucide-react";
-import Bold from "@tiptap/extension-bold"; 
-import Italic from "@tiptap/extension-italic"; 
+import { AIMenu } from "@/components/workspace/ai-menu";
 
 interface RichTextEditorProps {
   content: string;
@@ -36,394 +46,380 @@ export function RichTextEditor({
   placeholder = "Start typing...",
   minHeight = "150px",
 }: RichTextEditorProps) {
+  const [showAIMenu, setShowAIMenu] = useState(false);
+  const [selectedText, setSelectedText] = useState("");
+  const [aiMenuPosition, setAIMenuPosition] = useState({ x: 0, y: 0 });
+
   const editor = useEditor({
-  immediatelyRender: false,
-  extensions: [
-    StarterKit.configure({
-      heading: {
-        levels: [1, 2, 3],
+    immediatelyRender: false,
+    extensions: [
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3],
+        },
+      }),
+      Underline,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+      TextStyle,
+      Color,
+      Highlight.configure({
+        multicolor: true,
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: "text-purple-500 underline cursor-pointer",
+        },
+      }),
+    ],
+    content: content,
+    editorProps: {
+      attributes: {
+        class:
+          "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none prose-invert max-w-none",
+        style: `min-height: ${minHeight};`,
       },
-    }),
-    Placeholder.configure({
-      placeholder,
-    }),
-    Link.configure({
-      openOnClick: false,
-    }),
-    Underline,
-    TextStyle,
-    Color,
-  ],
-  content,
-  onUpdate: ({ editor }) => {
-    onChange(editor.getHTML());
-  },
-  onCreate: ({ editor }) => {
-    console.log('Editor created, italic available:', editor.can().toggleItalic());
-  },
-  editorProps: {
-    attributes: {
-      class: "prose prose-sm max-w-none focus:outline-none px-4 py-3",
-      style: `min-height: ${minHeight}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;`,
     },
-  },
-});
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+  });
 
   if (!editor) {
     return null;
   }
 
-  const toggleLink = () => {
-    const previousUrl = editor.getAttributes("link").href;
-    const url = window.prompt("Enter URL", previousUrl);
-
-    if (url === null) {
-      return;
-    }
-
-    if (url === "") {
-      editor.chain().focus().extendMarkRange("link").unsetLink().run();
-      return;
-    }
-
-    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
-  };
-
-  const COLORS = [
-    { name: 'Default', color: null },
-    { name: 'White', color: '#FFFFFF' },
-    { name: 'Gray', color: '#9CA3AF' },
-    { name: 'Red', color: '#EF4444' },
-    { name: 'Orange', color: '#F97316' },
-    { name: 'Yellow', color: '#EAB308' },
-    { name: 'Green', color: '#10B981' },
-    { name: 'Blue', color: '#3B82F6' },
-    { name: 'Purple', color: '#8B5CF6' },
-    { name: 'Pink', color: '#EC4899' },
-    { name: 'Cyan', color: '#06B6D4' },
-    { name: 'Indigo', color: '#6366F1' },
-  ];
+  const ToolbarButton = ({
+    onClick,
+    active,
+    children,
+    title,
+  }: {
+    onClick: () => void;
+    active?: boolean;
+    children: React.ReactNode;
+    title: string;
+  }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`p-2 rounded-lg transition-all hover:bg-gray-200 dark:hover:bg-gray-700 ${active
+          ? "bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300"
+          : "text-gray-700 dark:text-gray-300"
+        }`}
+      title={title}
+    >
+      {children}
+    </button>
+  );
 
   return (
-    <div className="border-2 border-purple-100 dark:border-purple-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-900">
+    <div className="border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900">
       {/* Toolbar */}
-      <div className="flex items-center gap-1 p-2 border-b border-purple-100 dark:border-purple-800 flex-wrap bg-gray-50 dark:bg-slate-800">
+      <div className="border-b border-gray-300 dark:border-gray-700 p-2 bg-gray-50 dark:bg-slate-800 flex flex-wrap gap-1">
         {/* Text Formatting */}
-        <div className="flex items-center gap-1 pr-2 border-r border-gray-300 dark:border-gray-600">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().toggleBold().run();
-            }}
-            className={`
-              p-2 rounded-lg transition-all
-              ${editor.isActive("bold")
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
-              }
-            `}
+        <div className="flex items-center gap-1">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            active={editor.isActive("bold")}
             title="Bold (Ctrl+B)"
           >
-            <BoldIcon className="w-4 h-4" />
-          </button>
+            <Bold className="w-4 h-4" />
+          </ToolbarButton>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              console.log('Before toggle - isItalic:', editor.isActive("italic"));
-              editor.chain().focus().toggleItalic().run();
-              console.log('After toggle - isItalic:', editor.isActive("italic"));
-              console.log('HTML:', editor.getHTML());
-            }}
-            className={`
-    p-2 rounded-lg transition-all
-    ${editor.isActive("italic")
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
-              }
-  `}
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            active={editor.isActive("italic")}
             title="Italic (Ctrl+I)"
           >
-            <ItalicIcon className="w-4 h-4" />
-          </button>
+            <Italic className="w-4 h-4" />
+          </ToolbarButton>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().toggleUnderline().run();
-            }}
-            className={`
-              p-2 rounded-lg transition-all
-              ${editor.isActive("underline")
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
-              }
-            `}
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            active={editor.isActive("underline")}
             title="Underline (Ctrl+U)"
           >
             <UnderlineIcon className="w-4 h-4" />
-          </button>
+          </ToolbarButton>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().toggleStrike().run();
-            }}
-            className={`
-              p-2 rounded-lg transition-all
-              ${editor.isActive("strike")
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
-              }
-            `}
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            active={editor.isActive("strike")}
             title="Strikethrough"
           >
             <Strikethrough className="w-4 h-4" />
-          </button>
+          </ToolbarButton>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().toggleCode().run();
-            }}
-            className={`
-              p-2 rounded-lg transition-all
-              ${editor.isActive("code")
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
-              }
-            `}
-            title="Inline Code"
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleCode().run()}
+            active={editor.isActive("code")}
+            title="Code"
           >
             <Code className="w-4 h-4" />
-          </button>
+          </ToolbarButton>
         </div>
+
+        <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
 
         {/* Headings */}
-        <div className="flex items-center gap-1 px-2 border-r border-gray-300 dark:border-gray-600">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().toggleHeading({ level: 1 }).run();
-            }}
-            className={`
-              px-2 py-1 rounded-lg text-sm font-bold transition-all
-              ${editor.isActive("heading", { level: 1 })
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
-              }
-            `}
+        <div className="flex items-center gap-1">
+          <ToolbarButton
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 1 }).run()
+            }
+            active={editor.isActive("heading", { level: 1 })}
             title="Heading 1"
           >
-            H1
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().toggleHeading({ level: 2 }).run();
-            }}
-            className={`
-              px-2 py-1 rounded-lg text-sm font-bold transition-all
-              ${editor.isActive("heading", { level: 2 })
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
-              }
-            `}
+            <Heading1 className="w-4 h-4" />
+          </ToolbarButton>
+
+          <ToolbarButton
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 2 }).run()
+            }
+            active={editor.isActive("heading", { level: 2 })}
             title="Heading 2"
           >
-            H2
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().toggleHeading({ level: 3 }).run();
-            }}
-            className={`
-              px-2 py-1 rounded-lg text-sm font-bold transition-all
-              ${editor.isActive("heading", { level: 3 })
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
-              }
-            `}
+            <Heading2 className="w-4 h-4" />
+          </ToolbarButton>
+
+          <ToolbarButton
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 3 }).run()
+            }
+            active={editor.isActive("heading", { level: 3 })}
             title="Heading 3"
           >
-            H3
-          </button>
+            <Heading3 className="w-4 h-4" />
+          </ToolbarButton>
         </div>
 
+        <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
+
         {/* Lists */}
-        <div className="flex items-center gap-1 px-2 border-r border-gray-300 dark:border-gray-600">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().toggleBulletList().run();
-            }}
-            className={`
-              p-2 rounded-lg transition-all
-              ${editor.isActive("bulletList")
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
-              }
-            `}
+        <div className="flex items-center gap-1">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            active={editor.isActive("bulletList")}
             title="Bullet List"
           >
             <List className="w-4 h-4" />
-          </button>
+          </ToolbarButton>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().toggleOrderedList().run();
-            }}
-            className={`
-              p-2 rounded-lg transition-all
-              ${editor.isActive("orderedList")
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
-              }
-            `}
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            active={editor.isActive("orderedList")}
             title="Numbered List"
           >
             <ListOrdered className="w-4 h-4" />
-          </button>
-        </div>
+          </ToolbarButton>
 
-        {/* Other */}
-        <div className="flex items-center gap-1 px-2 border-r border-gray-300 dark:border-gray-600">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().toggleBlockquote().run();
-            }}
-            className={`
-              p-2 rounded-lg transition-all
-              ${editor.isActive("blockquote")
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
-              }
-            `}
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            active={editor.isActive("blockquote")}
             title="Quote"
           >
             <Quote className="w-4 h-4" />
-          </button>
+          </ToolbarButton>
+        </div>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().toggleCodeBlock().run();
-            }}
-            className={`
-              p-2 rounded-lg transition-all
-              ${editor.isActive("codeBlock")
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
-              }
-            `}
-            title="Code Block"
+        <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
+
+        {/* Alignment */}
+        <div className="flex items-center gap-1">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign("left").run()}
+            active={editor.isActive({ textAlign: "left" })}
+            title="Align Left"
           >
-            <Code className="w-4 h-4" />
-          </button>
+            <AlignLeft className="w-4 h-4" />
+          </ToolbarButton>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              toggleLink();
-            }}
-            className={`
-              p-2 rounded-lg transition-all
-              ${editor.isActive("link")
-                ? "bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400"
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign("center").run()}
+            active={editor.isActive({ textAlign: "center" })}
+            title="Align Center"
+          >
+            <AlignCenter className="w-4 h-4" />
+          </ToolbarButton>
+
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign("right").run()}
+            active={editor.isActive({ textAlign: "right" })}
+            title="Align Right"
+          >
+            <AlignRight className="w-4 h-4" />
+          </ToolbarButton>
+        </div>
+
+        <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
+
+        {/* More Actions */}
+        <div className="flex items-center gap-1">
+          <ToolbarButton
+            onClick={() => {
+              const url = window.prompt("Enter URL:");
+              if (url) {
+                editor.chain().focus().setLink({ href: url }).run();
               }
-            `}
+            }}
+            active={editor.isActive("link")}
             title="Add Link"
           >
             <Link2 className="w-4 h-4" />
-          </button>
+          </ToolbarButton>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().setHorizontalRule().run();
-            }}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400 transition-all"
+          <ToolbarButton
+            onClick={() =>
+              editor.chain().focus().setHorizontalRule().run()
+            }
             title="Horizontal Line"
           >
             <Minus className="w-4 h-4" />
-          </button>
-        </div>
+          </ToolbarButton>
 
-        {/* Text Color */}
-        <div className="flex items-center gap-1 pl-2">
+          {/* Color Picker */}
           <div className="relative group">
             <button
               type="button"
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-all flex items-center gap-2"
+              className="p-2 rounded-lg transition-all hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
               title="Text Color"
             >
-              <Palette className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-              <div
-                className="w-4 h-1 rounded"
-                style={{
-                  backgroundColor: editor.getAttributes('textStyle').color || '#9CA3AF'
-                }}
-              />
+              <Palette className="w-4 h-4" />
             </button>
-
-            {/* Color Palette Dropdown */}
-            <div className="absolute top-full left-0 mt-2 p-3 bg-white dark:bg-slate-700 rounded-xl shadow-2xl border-2 border-gray-200 dark:border-gray-600 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 min-w-200px">
-              <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                Text Color
-              </p>
-              <div className="grid grid-cols-4 gap-2">
-                {COLORS.map((colorOption) => (
+            <div className="hidden group-hover:block absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-700 rounded-lg p-2 shadow-lg z-10">
+              <div className="grid grid-cols-5 gap-1">
+                {[
+                  "#000000",
+                  "#FF0000",
+                  "#00FF00",
+                  "#0000FF",
+                  "#FFFF00",
+                  "#FF00FF",
+                  "#00FFFF",
+                  "#FFA500",
+                  "#800080",
+                  "#FFC0CB",
+                ].map((color) => (
                   <button
-                    key={colorOption.name}
+                    key={color}
                     type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (colorOption.color === null) {
-                        editor.chain().focus().unsetColor().run();
-                      } else {
-                        editor.chain().focus().setColor(colorOption.color).run();
-                      }
-                    }}
-                    className={`
-                      w-8 h-8 rounded-lg border-2 transition-all hover:scale-110
-                      ${editor.getAttributes('textStyle').color === colorOption.color
-                        ? 'border-purple-500 ring-2 ring-purple-300 dark:ring-purple-700'
-                        : 'border-gray-300 dark:border-gray-600'
-                      }
-                    `}
-                    style={{
-                      backgroundColor: colorOption.color || '#e5e7eb',
-                      border: colorOption.color === '#FFFFFF' ? '2px solid #d1d5db' : undefined
-                    }}
-                    title={colorOption.name}
+                    onClick={() =>
+                      editor.chain().focus().setColor(color).run()
+                    }
+                    className="w-6 h-6 rounded border border-gray-300 dark:border-gray-600 hover:scale-110 transition-transform"
+                    style={{ backgroundColor: color }}
+                    title={color}
                   />
                 ))}
               </div>
             </div>
           </div>
         </div>
+
+        <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
+
+        {/* Undo/Redo */}
+        <div className="flex items-center gap-1">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().undo().run()}
+            title="Undo (Ctrl+Z)"
+          >
+            <Undo className="w-4 h-4" />
+          </ToolbarButton>
+
+          <ToolbarButton
+            onClick={() => editor.chain().focus().redo().run()}
+            title="Redo (Ctrl+Y)"
+          >
+            <Redo className="w-4 h-4" />
+          </ToolbarButton>
+        </div>
+
+        {/* AI Assistant Button */}
+        <div className="flex items-center gap-1 pl-2 border-l border-gray-300 dark:border-gray-600">
+          <button
+            type="button"
+            onClick={() => {
+              const selection = editor?.state.selection;
+              if (selection && !selection.empty) {
+                const text = editor.state.doc.textBetween(
+                  selection.from,
+                  selection.to,
+                  " "
+                );
+                if (text.trim()) {
+                  setSelectedText(text);
+                  setShowAIMenu(true);
+                } else {
+                  alert("Please select some text first");
+                }
+              } else {
+                alert("Please select some text first");
+              }
+            }}
+            className="p-2 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-all group"
+            title="AI Assistant (select text first)"
+          >
+            <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform" />
+          </button>
+        </div>
       </div>
 
-      {/* Editor */}
-      <EditorContent editor={editor} />
+      {/* Editor Content */}
+      <div className="p-4">
+        <EditorContent editor={editor} placeholder={placeholder} />
+      </div>
+
+      {/* AI Menu */}
+      {showAIMenu && (
+        <AIMenu
+          selectedText={selectedText}
+          onInsert={(newText) => {
+            if (editor) {
+              const { from, to } = editor.state.selection;
+
+              // Clean and format the text properly
+              let formattedContent = newText.trim();
+
+              // Split by double newlines (paragraphs) OR single newlines
+              const paragraphs = formattedContent
+                .split(/\n\n+/)  // Split by 2+ newlines
+                .filter(p => p.trim())
+                .map(para => {
+                  // Handle single line breaks within paragraph
+                  const lines = para
+                    .split(/\n/)
+                    .filter(line => line.trim())
+                    .join('<br/>');
+
+                  return `<p>${lines}</p>`;
+                });
+
+              const htmlContent = paragraphs.join('');
+
+              // Delete selection and insert formatted content
+              editor
+                .chain()
+                .focus()
+                .deleteRange({ from, to })
+                .insertContent(htmlContent || newText)
+                .run();
+
+              setShowAIMenu(false);
+              setSelectedText("");
+            }
+          }}
+          onClose={() => {
+            setShowAIMenu(false);
+            setSelectedText("");
+          }}
+          position={aiMenuPosition}
+        />
+      )}
     </div>
   );
 }
