@@ -1,20 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import db from "@/lib/db";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import prisma from "@/lib/db";
 
-export async function GET(request: NextRequest) {
+export async function GET(req:Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "userId is required" },
-        { status: 400 },
-      );
+    const session = await getServerSession(authOptions);
+    if(!session) {
+      return NextResponse.json({error:"Unauthorized"},{status:401});
     }
 
+     const { searchParams } = new URL(req.url);
+    const includeArchived = searchParams.get("includeArchived") === "true"
+
     const workspaces = await db.workspace.findMany({
-      where: { userId },
+      where: {
+        OR: [
+          { userId: session.user.id },
+          {
+            members: {
+              some: {
+                userId: session.user.id,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        members: {
+          where: {
+            userId: session.user.id,
+          },
+          select: {
+            role: true,
+          },
+        },
+      },
       orderBy: { createdAt: "desc" },
     });
 
@@ -28,44 +50,51 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
-    const { name, userId } = body;
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    if (!name || !userId) {
+    const body = await req.json();
+    const { name, icon, description } = body;
+
+    if (!name) {
       return NextResponse.json(
-        { error: "name and userId are required" },
-        { status: 400 }
+        { error: "Workspace name required" },
+        { status: 400 },
       );
     }
 
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-
-    const workspace = await db.workspace.create({
+    const workspace = await prisma.workspace.create({
       data: {
         name,
-        slug: `${slug}-${Date.now()}`,
-        userId,
+        icon: icon || "✨",
+        description,
+        userId: session.user.id,
+        members: {
+          create: {
+            userId: session.user.id,
+            role: "owner",
+          },
+        },
       },
     });
 
-    return NextResponse.json({ workspace }, { status: 201 });
+    return NextResponse.json({ workspace });
   } catch (error) {
     console.error("Error creating workspace:", error);
     return NextResponse.json(
       { error: "Failed to create workspace" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(req: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
     if (!id) {
