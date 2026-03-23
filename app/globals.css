@@ -56,3 +56,252 @@
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
 }
+/* Dark editor styles */
+.ProseMirror {
+  color: #e5e7eb;
+}
+
+.ProseMirror.ProseMirror-focused {
+  outline: none;
+}
+
+/* Headings in dark mode */
+.prose-invert h1,
+.prose-invert h2,
+.prose-invert h3 {
+  color: #fff;
+}
+
+/* Links in dark mode */
+.prose-invert a {
+  color: #a78bfa;
+}
+
+/* Code in dark mode */
+.prose-invert code {
+  background-color: #1e293b;
+  color: #c084fc;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+}
+
+/* Blockquote in dark mode */
+.prose-invert blockquote {
+  border-left-color: #8b5cf6;
+  color: #d1d5db;
+}
+
+/* Lists in dark mode */
+.prose-invert ul,
+.prose-invert ol {
+  color: #e5e7eb;
+}
+
+/* Code blocks */
+.prose-invert pre {
+  background-color: #1e293b;
+  color: #e5e7eb;
+}
+
+/* Tiptap Heading Styles */
+.ProseMirror h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 2.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.ProseMirror h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 2.25rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.875rem;
+  color: #fff;
+}
+
+.ProseMirror h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 0.75rem;
+  color: #fff;
+}
+
+/* Ensure headings are visible on dark background */
+.prose-invert h1,
+.prose-invert h2,
+.prose-invert h3 {
+  color: #ffffff !important;
+}
+
+/* Light mode headings */
+.ProseMirror:not(.dark) h1,
+.ProseMirror:not(.dark) h2,
+.ProseMirror:not(.dark) h3 {
+  color: #111827;
+}
+
+/* Paragraph spacing */
+.ProseMirror p {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.75;
+}
+
+/* First child spacing fix */
+.ProseMirror > * + * {
+  margin-top: 0.75rem;
+}
+
+/* Strong/Bold text */
+.ProseMirror strong {
+  font-weight: 700;
+  color: inherit;
+}
+
+/* Italic text */
+.ProseMirror em {
+  font-style: italic;
+  color: inherit;
+}
+
+/* Lists */
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.ProseMirror li {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Blockquote */
+.ProseMirror blockquote {
+  border-left: 4px solid #8b5cf6;
+  padding-left: 1rem;
+  margin-left: 0;
+  font-style: italic;
+  color: #d1d5db;
+}
+
+/* Code block */
+.ProseMirror pre {
+  background-color: #1e293b;
+  color: #e5e7eb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  font-family: 'Courier New', monospace;
+}
+
+.ProseMirror code {
+  background-color: #1e293b;
+  color: #c084fc;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+}
+
+/* Inline code shouldn't have pre styles */
+.ProseMirror p code {
+  background-color: #1e293b;
+  color: #c084fc;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+}
+
+/* Horizontal rule */
+.ProseMirror hr {
+  border: none;
+  border-top: 2px solid #374151;
+  margin: 1.5rem 0;
+}
+
+/* Link styles */
+.ProseMirror a {
+  color: #a78bfa;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ProseMirror a:hover {
+  color: #c4b5fd;
+}
+
+/* Focus state */
+.ProseMirror:focus {
+  outline: none;
+}
+
+/* Placeholder text */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #6b7280;
+  pointer-events: none;
+  height: 0;
+}
+
+/* FORCE ITALIC STYLES - CRITICAL FIX */
+.ProseMirror em {
+  font-style: italic !important;
+  font-family: inherit !important;
+}
+
+.ProseMirror i {
+  font-style: italic !important;
+  font-family: inherit !important;
+}
+
+/* Override any conflicting prose styles */
+.prose em,
+.prose-sm em,
+.prose-lg em {
+  font-style: italic !important;
+}
+
+.prose i,
+.prose-sm i,
+.prose-lg i {
+  font-style: italic !important;
+}
+
+/* Dark mode */
+.dark .ProseMirror em,
+.dark .ProseMirror i {
+  font-style: italic !important;
+  color: #e5e7eb;
+}
+
+/* Make sure no font is blocking italic */
+.ProseMirror * {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+/* FORCE LTR FOR ALL TEXTAREAS - NUCLEAR OPTION */
+textarea {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: normal !important;
+}
+
+/* Specifically target comment textareas */
+textarea[placeholder*="comment"],
+textarea[placeholder*="reply"],
+textarea[placeholder*="Reply"] {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: normal !important;
+  writing-mode: horizontal-tb !important;
+}
