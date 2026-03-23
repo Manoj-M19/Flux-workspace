@@ -13,7 +13,8 @@ import {
   Check,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { LTRTextarea } from "@/components/ui/ltr-input";
+import { MentionInput } from "@/components/workspace/mention-input";
+import { MentionDisplay } from "@/components/workspace/mention-display";
 
 interface Comment {
   id: string;
@@ -31,9 +32,10 @@ interface Comment {
 
 interface CommentsSectionProps {
   pageId: string;
+  workspaceId: string;
 }
 
-export function CommentsSection({ pageId }: CommentsSectionProps) {
+export function CommentsSection({ pageId, workspaceId }: CommentsSectionProps) {
   const { data: session } = useSession();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -106,9 +108,9 @@ export function CommentsSection({ pageId }: CommentsSectionProps) {
           prev.map((comment) =>
             comment.id === parentId
               ? {
-                  ...comment,
-                  replies: [...(comment.replies || []), data.comment],
-                }
+                ...comment,
+                replies: [...(comment.replies || []), data.comment],
+              }
               : comment
           )
         );
@@ -140,11 +142,11 @@ export function CommentsSection({ pageId }: CommentsSectionProps) {
             comment.id === id
               ? data.comment
               : {
-                  ...comment,
-                  replies: comment.replies?.map((reply) =>
-                    reply.id === id ? data.comment : reply
-                  ),
-                }
+                ...comment,
+                replies: comment.replies?.map((reply) =>
+                  reply.id === id ? data.comment : reply
+                ),
+              }
           )
         );
         setEditingId(null);
@@ -240,26 +242,15 @@ export function CommentsSection({ pageId }: CommentsSectionProps) {
 
             {isEditing ? (
               <div style={{ marginTop: "8px" }}>
-                <LTRTextarea
-  value={editContent}
-  onChange={setEditContent}
-  autoFocus
-  rows={2}
-  style={{
-    width: "100%",
-    padding: "12px",
-    fontSize: "14px",
-    lineHeight: "1.5",
-    color: "#e5e7eb",
-    backgroundColor: "#1e293b",
-    border: "2px solid #7c3aed",
-    borderRadius: "12px",
-    outline: "none",
-    resize: "none",
-    fontFamily: "inherit",
-    boxSizing: "border-box",
-  }}
-/>
+                <MentionInput
+                  value={editContent}
+                  onChange={setEditContent}
+                  placeholder="Edit comment..."
+                  workspaceId={workspaceId}
+                  autoFocus
+                  rows={2}
+                  className="w-full px-3 py-2 text-xs sm:text-sm text-gray-100 bg-slate-800 border-2 border-purple-600 rounded-xl outline-none resize-none"
+                />
                 <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
                   <button
                     onClick={() => handleUpdateComment(comment.id)}
@@ -302,9 +293,8 @@ export function CommentsSection({ pageId }: CommentsSectionProps) {
               </div>
             ) : (
               <>
-                <p style={{ fontSize: "14px", color: "#d1d5db", lineHeight: "1.6", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-                  {comment.content}
-                </p>
+
+                <MentionDisplay content={comment.content} />
 
                 {/* Actions */}
                 <div style={{ display: "flex", gap: "16px", marginTop: "8px" }}>
@@ -373,123 +363,84 @@ export function CommentsSection({ pageId }: CommentsSectionProps) {
               </>
             )}
 
-            {/* Reply Input - COMPLETELY REWRITTEN */}
-            {/* Reply Input - FIXED VERSION */}
-{replyingTo === comment.id && (
-  <div 
-    dir="ltr"
-    style={{ 
-      marginTop: "12px",
-      direction: "ltr",
-      unicodeBidi: "normal",
-    }}
-  >
-    <div
-      dir="ltr"
-      style={{
-        direction: "ltr",
-        textAlign: "left",
-      }}
-    >
-      <textarea
-        value={replyContent}
-        onChange={(e) => {
-          const target = e.target;
-          setReplyContent(target.value);
-          // Force LTR after every change
-          target.dir = "ltr";
-          target.style.direction = "ltr";
-          target.style.textAlign = "left";
-        }}
-        placeholder="Write a reply..."
-        dir="ltr"
-        lang="en"
-        autoFocus
-        onFocus={(e) => {
-          // Force LTR on focus
-          e.target.dir = "ltr";
-          e.target.style.direction = "ltr";
-          e.target.style.textAlign = "left";
-          e.target.style.unicodeBidi = "normal";
-          // Move cursor to end
-          const len = e.target.value.length;
-          e.target.setSelectionRange(len, len);
-        }}
-        style={{
-          width: "100%",
-          height: "80px",
-          padding: "12px",
-          paddingLeft: "12px",
-          paddingRight: "12px",
-          fontSize: "14px",
-          lineHeight: "1.5",
-          color: "#e5e7eb",
-          backgroundColor: "#1e293b",
-          border: "2px solid #7c3aed",
-          borderRadius: "12px",
-          outline: "none",
-          resize: "none",
-          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-          boxSizing: "border-box",
-          textAlign: "left",
-          direction: "ltr",
-          unicodeBidi: "normal",
-          writingMode: "horizontal-tb",
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-            e.preventDefault();
-            handleAddReply(comment.id);
-          }
-        }}
-      />
-    </div>
-    <div style={{ display: "flex", gap: "8px", marginTop: "8px", alignItems: "center" }}>
-      <button
-        onClick={() => handleAddReply(comment.id)}
-        disabled={!replyContent.trim()}
-        style={{
-          padding: "8px 16px",
-          fontSize: "13px",
-          fontWeight: "500",
-          color: "white",
-          backgroundColor: replyContent.trim() ? "#7c3aed" : "#4b5563",
-          border: "none",
-          borderRadius: "8px",
-          cursor: replyContent.trim() ? "pointer" : "not-allowed",
-          display: "flex",
-          alignItems: "center",
-          gap: "6px",
-          opacity: replyContent.trim() ? 1 : 0.5,
-        }}
-      >
-        <Send className="w-4 h-4" />
-        Reply
-      </button>
-      <button
-        onClick={() => {
-          setReplyingTo(null);
-          setReplyContent("");
-        }}
-        style={{
-          padding: "8px 16px",
-          fontSize: "13px",
-          fontWeight: "500",
-          color: "#e5e7eb",
-          backgroundColor: "#334155",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer",
-        }}
-      >
-        Cancel
-      </button>
-      <span style={{ fontSize: "12px", color: "#6b7280", marginLeft: "auto" }}>
-        ⌘+Enter
-      </span>
-    </div>
-  </div>
-)}
+            {replyingTo === comment.id && (
+              <div
+                dir="ltr"
+                style={{
+                  marginTop: "12px",
+                  direction: "ltr",
+                  unicodeBidi: "normal",
+                }}
+              >
+                <div
+                  dir="ltr"
+                  style={{
+                    direction: "ltr",
+                    textAlign: "left",
+                  }}
+                >
+                  <MentionInput
+                    value={replyContent}
+                    onChange={setReplyContent}
+                    placeholder="Write a reply... (type @ to mention)"
+                    workspaceId={workspaceId}
+                    autoFocus
+                    rows={2}
+                    className="w-full px-3 py-2 text-xs sm:text-sm text-gray-100 bg-slate-800 border-2 border-purple-600 rounded-xl outline-none resize-none"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                        e.preventDefault();
+                        handleAddReply(comment.id);
+                      }
+                    }}
+                  />
+                </div>
+                <div style={{ display: "flex", gap: "8px", marginTop: "8px", alignItems: "center" }}>
+                  <button
+                    onClick={() => handleAddReply(comment.id)}
+                    disabled={!replyContent.trim()}
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "13px",
+                      fontWeight: "500",
+                      color: "white",
+                      backgroundColor: replyContent.trim() ? "#7c3aed" : "#4b5563",
+                      border: "none",
+                      borderRadius: "8px",
+                      cursor: replyContent.trim() ? "pointer" : "not-allowed",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      opacity: replyContent.trim() ? 1 : 0.5,
+                    }}
+                  >
+                    <Send className="w-4 h-4" />
+                    Reply
+                  </button>
+                  <button
+                    onClick={() => {
+                      setReplyingTo(null);
+                      setReplyContent("");
+                    }}
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "13px",
+                      fontWeight: "500",
+                      color: "#e5e7eb",
+                      backgroundColor: "#334155",
+                      border: "none",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <span style={{ fontSize: "12px", color: "#6b7280", marginLeft: "auto" }}>
+                    ⌘+Enter
+                  </span>
+                </div>
+              </div>
+            )}
             {/* Replies */}
             {comment.replies && comment.replies.length > 0 && (
               <div style={{ marginTop: "12px" }}>
@@ -639,33 +590,24 @@ export function CommentsSection({ pageId }: CommentsSectionProps) {
                 flexShrink: 0,
               }}
             >
-              <LTRTextarea
-  value={newComment}
-  onChange={setNewComment}
-  placeholder="Write a comment..."
-  rows={3}
-  style={{
-    width: "100%",
-    padding: "12px",
-    fontSize: "14px",
-    lineHeight: "1.5",
-    color: "#e5e7eb",
-    backgroundColor: "#1e293b",
-    border: "2px solid #7c3aed",
-    borderRadius: "12px",
-    outline: "none",
-    resize: "none",
-    fontFamily: "inherit",
-    boxSizing: "border-box",
-    marginBottom: "8px",
-  }}
-  onKeyDown={(e) => {
-    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      handleAddComment();
-    }
-  }}
-/>
+
+              <MentionInput
+                value={newComment}
+                onChange={setNewComment}
+                placeholder="Write a comment... (type @ to mention someone)"
+                workspaceId={workspaceId}
+                rows={3}
+                className="w-full px-3 py-2.5 text-sm text-gray-100 bg-slate-800 border-2 border-purple-600 rounded-xl outline-none resize-none"
+                style={{
+                  marginBottom: "8px",
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                    e.preventDefault();
+                    handleAddComment();
+                  }
+                }}
+              />
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <span style={{ fontSize: "12px", color: "#6b7280" }}>
                   ⌘+Enter to send
