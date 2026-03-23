@@ -123,8 +123,8 @@ export function CommandPalette({
 
   const filteredCommands = search
     ? commands.filter((cmd) =>
-        cmd.label.toLowerCase().includes(search.toLocaleLowerCase()),
-      )
+      cmd.label.toLowerCase().includes(search.toLocaleLowerCase()),
+    )
     : commands;
 
   const groupedCommands = filteredCommands.reduce(
@@ -194,15 +194,15 @@ export function CommandPalette({
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="fixed top-[15%] left-1/2 -translate-x-1/2 w-full max-w-2xl z-50"
           >
-            <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-purple-100 overflow-hidden">
-              <div className="flex items-center gap-3 p-4 border-b border-purple-100">
-                <Search className="w-5 h-5 text-gray-400" />
+            <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-purple-100 dark:border-purple-800 overflow-hidden">
+              <div className="flex items-center gap-3 p-4 border-b border-purple-100 dark:border-purple-800">
+                <Search className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Type a command or search..."
-                  className="flex-1 bg-transparent border-none outline-none text-lg placeholder:text-gray-400"
+                  className="flex-1 bg-transparent border-none outline-none text-lg placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                   autoFocus
                 />
                 <kbd className="hidden sm:block px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded font-mono">
@@ -234,10 +234,9 @@ export function CommandPalette({
                               whileHover={{ x: 4 }}
                               className={`
                                 w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all
-                                ${
-                                  isSelected
-                                    ? "bg-linear-to-r from-purple-500 to-pink-500 text-white"
-                                    : "hover:bg-purple-50 text-gray-700"
+                                ${isSelected
+                                  ? "bg-linear-to-r from-purple-500 to-pink-500 text-white"
+                                  : "hover:bg-purple-50 text-gray-700"
                                 }
                               `}
                             >
@@ -248,13 +247,12 @@ export function CommandPalette({
                               {cmd.shortcut && (
                                 <kbd
                                   className={`
-                                    px-2 py-1 text-xs rounded font-mono
-                                    ${
-                                      isSelected
-                                        ? "bg-white/20 text-white"
-                                        : "bg-purple-100 text-purple-600"
+  w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all
+  ${isSelected
+                                      ? "bg-linear-to-r from-purple-500 to-pink-500 text-white"
+                                      : "hover:bg-purple-50 dark:hover:bg-purple-900/20 text-gray-700 dark:text-gray-300"
                                     }
-                                  `}
+`}
                                 >
                                   {cmd.shortcut}
                                 </kbd>
@@ -268,7 +266,7 @@ export function CommandPalette({
                 )}
               </div>
 
-              <div className="flex items-center justify-between px-4 py-3 border-t border-purple-100 bg-purple-50/50 text-xs text-gray-600">
+              <div className="flex items-center justify-between px-4 py-3 border-t border-purple-100 dark:border-purple-800 bg-purple-50/50 dark:bg-slate-900/50 text-xs text-gray-600 dark:text-gray-400">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1">
                     <kbd className="px-1.5 py-0.5 bg-white border border-purple-200 rounded font-mono">
