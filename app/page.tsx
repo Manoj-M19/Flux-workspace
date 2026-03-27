@@ -76,13 +76,13 @@ export default function HomePage() {
                 <>
                   <button
                     onClick={() => signIn()}
-                    className="hidden sm:block px-5 py-2 text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors"
+                    className="group px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-purple-500/50 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                   >
                     Sign in
                   </button>
                   <button
                     onClick={() => signIn("google", { callbackUrl: "/workspaces" })}
-                    className="group px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-purple-500/50 transition-all hover:scale-105 active:scale-95"
+                    className="group px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-purple-500/50 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                   >
                     Try for free
                   </button>
@@ -157,7 +157,7 @@ export default function HomePage() {
               <>
                 <button
                   onClick={() => signIn("google", { callbackUrl: "/workspaces" })}
-                  className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg font-semibold rounded-full hover:shadow-xl hover:shadow-purple-500/50 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                  className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg font-semibold rounded-full hover:shadow-xl hover:shadow-purple-500/50 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -169,7 +169,7 @@ export default function HomePage() {
                 </button>
                 <button
                   onClick={() => signIn("github", { callbackUrl: "/workspaces" })}
-                  className="group px-8 py-4 bg-gray-900 text-white text-lg font-semibold rounded-full hover:shadow-xl hover:bg-gray-800 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                  className="group px-8 py-4 bg-gray-900 text-white text-lg font-semibold rounded-full hover:shadow-xl hover:bg-gray-800 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer"
                 >
                   <Github className="w-5 h-5" />
                   Continue with GitHub
@@ -307,7 +307,7 @@ export default function HomePage() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
                     onClick={() => signIn("google", { callbackUrl: "/workspaces" })}
-                    className="px-8 py-4 bg-white text-purple-600 text-lg font-semibold rounded-full hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
+                    className="px-8 py-4 bg-white text-purple-600 text-lg font-semibold rounded-full hover:shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
                   >
                     Start for free
                   </button>
