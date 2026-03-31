@@ -361,7 +361,7 @@ export function RichTextEditor({
                 alert("Please select some text first");
               }
             }}
-            className="p-2 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-all group"
+            className="p-2 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-all group cursor-pointer"
             title="AI Assistant (select text first)"
           >
             <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform" />
