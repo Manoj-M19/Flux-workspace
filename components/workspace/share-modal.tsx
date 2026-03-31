@@ -219,7 +219,7 @@ export function ShareModal({
                             <select
                                 value={selectedRole}
                                 onChange={(e) => setSelectedRole(e.target.value)}
-                                className="px-4 py-3 border-2 border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="px-4 py-3 border-2 border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                             >
                                 <option value="member">Member</option>
                                 <option value="admin">Admin</option>
@@ -229,7 +229,7 @@ export function ShareModal({
                             <button
                                 onClick={handleInvite}
                                 disabled={!email || loading}
-                                className="px-6 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                className="px-6 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
                             >
                                 <UserPlus className="w-5 h-5" />
                                 Invite
