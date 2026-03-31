@@ -55,7 +55,7 @@ export function ExportMenu({ page }: ExportMenuProps) {
         ) : (
           <Download className="w-4 h-4" />
         )}
-        <span className="text-sm font-medium">Export</span>
+        <span className="text-sm font-medium cursor-pointer">Export</span>
       </button>
 
       <AnimatePresence>
