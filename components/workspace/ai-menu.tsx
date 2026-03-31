@@ -227,7 +227,7 @@ export function AIMenu({ selectedText, onInsert, onClose, position }: AIMenuProp
                     onInsert(result);
                     onClose();
                   }}
-                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:shadow-lg transition-all text-sm"
+                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:shadow-lg transition-all text-sm cursor-pointer"
                 >
                   Replace Text
                 </button>
@@ -235,7 +235,7 @@ export function AIMenu({ selectedText, onInsert, onClose, position }: AIMenuProp
                   onClick={() => {
                     navigator.clipboard.writeText(result);
                   }}
-                  className="px-4 py-2.5 border-2 border-purple-600 text-purple-600 dark:text-purple-400 rounded-lg font-medium hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all text-sm"
+                  className="px-4 py-2.5 border-2 border-purple-600 text-purple-600 dark:text-purple-400 rounded-lg font-medium hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all text-sm cursor-pointer"
                 >
                   Copy
                 </button>
@@ -244,7 +244,7 @@ export function AIMenu({ selectedText, onInsert, onClose, position }: AIMenuProp
                     setResult(null);
                     setError(null);
                   }}
-                  className="px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-slate-700 transition-all text-sm"
+                  className="px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-slate-700 transition-all text-sm cursor-pointer"
                 >
                   Back
                 </button>
