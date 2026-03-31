@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { authOptions } from "./../../../lib/auth";
 import { getServerSession } from "next-auth";
 import prisma from "@/lib/db";
 
-export async function GET(req:Request) {
+export async function GET(req:NextRequest) {
     try {
         const session = await getServerSession(authOptions);
         if(!session) {
