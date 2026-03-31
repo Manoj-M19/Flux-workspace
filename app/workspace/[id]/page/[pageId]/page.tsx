@@ -308,7 +308,7 @@ export default function PageView({
           {/* Share Button */}
           <button
             onClick={() => setShowShareModal(true)}
-            className="hidden sm:flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors text-gray-700 dark:text-gray-300"
+            className="hidden sm:flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors text-gray-700 dark:text-gray-300 cursor-pointer"
           >
             <Share className="w-4 h-4" />
             <span className="text-sm font-medium hidden sm:inline">Share</span>
