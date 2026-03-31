@@ -18,13 +18,13 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
-      }
-      return session;
-    },
+  async session({ session, token }) {
+    if (session.user && token.sub) {
+      session.user.id = token.sub;
+    }
+    return session;
   },
+},
   pages: {
     signIn: "/",
   },
