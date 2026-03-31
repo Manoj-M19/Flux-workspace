@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <a href="YOUR_VERCEL_URL">🌐 Live Demo</a> •
+  <a href="https://flux-workspace-seven.vercel.app/">🌐 Live Demo</a> •
   <a href="#features">✨ Features</a> •
   <a href="#tech-stack">🛠️ Tech Stack</a> •
   <a href="#getting-started">🚀 Getting Started</a> •
@@ -30,13 +30,12 @@
 
 ## 📸 Screenshots
 
-> **Note:** Add screenshots here after deployment
 >
 > ```
-> ![Homepage](./screenshots/landing.png)
-> ![Workspace](./screenshots/Workspaces.png)
-> ![AI Assistant](./screenshots/AI-assistent.png)
-> ![AI  Response](./screenshots/AI-response.png)
+> ![Homepage](./public/screenshots/landing.png)
+> ![Workspace](./public/screenshots/Workspaces.png)
+> ![AI Assistant](./public/screenshots/AI-assistent.png)
+> ![AI  Response](./public/screenshots/AI-response.png)
 
 ---
 
@@ -261,7 +260,7 @@ This project is deployed on **Vercel** with:
 - ✅ Edge Functions for API routes
 - ✅ PostgreSQL on Neon (serverless)
 
-**Live URL:** [YOUR_VERCEL_URL](YOUR_VERCEL_URL)
+**Live URL:** [flux-workspace-git-main-manoj-m19s-projects.vercel.app]
 
 ---
 
@@ -306,12 +305,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👤 Author
 
-**Your Name**
+Manoj M
 
-- Website: [yourwebsite.com](https://yourwebsite.com)
-- LinkedIn: [linkedin.com/in/yourname](https://linkedin.com/in/yourname)
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
+- Website: [flux-workspace-git-main-manoj-m19s-projects.vercel.app]
+- LinkedIn: [www.linkedin.com/in/manoj-m-2b20b43b9]
+- GitHub: [@Manoj-M19]
+- Email: manojpavithra2004@gmail.com
 
 ---
 
@@ -326,6 +325,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <div align="center">
-  <p>Made with ❤️ by Your Name</p>
+  <p>Made with ❤️ by Manoj M</p>
   <p>⭐ Star this repo if you found it helpful!</p>
 </div>
